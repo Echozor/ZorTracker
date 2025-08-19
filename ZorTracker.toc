@@ -1,0 +1,8 @@
+## Interface: 11200
+## Title: ZorTracker
+## Notes: Standalone DoT tracker for druids.
+## Author: Echozor
+## Version: 1.0
+
+ZorTracker.xml
+ZorTracker.lua
