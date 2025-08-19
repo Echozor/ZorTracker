@@ -2,6 +2,7 @@
 ## Title: ZorTracker
 ## Notes: Standalone DoT tracker for druids.
 ## Author: Echozor
+## SavedVariables: ZorTrackerDB
 ## Version: 1.0
 
 ZorTracker.xml

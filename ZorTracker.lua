@@ -5,6 +5,7 @@ spellTimers = spellTimers or {}
 
 ZorTrackerBars = ZorTrackerBars or {}
 local bars = ZorTrackerBars
+ZorTrackerDB = ZorTrackerDB or {}
 
 -- === Event Registration === --
 function ZorTracker_OnLoad()
@@ -169,18 +170,43 @@ function ResetSpellTimer(spellName)
 end
 
 -- ========================================== Tracker ==========================================
--- ======= Movable Anchor Frame =======
+-- Anchor
 local anchor = CreateFrame("Frame", "ZorTrackerAnchor", UIParent)
 anchor:SetWidth(10)
 anchor:SetHeight(10)
-anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 anchor:EnableMouse(true)
 anchor:SetMovable(true)
 anchor:RegisterForDrag("LeftButton")
 
+-- Restore saved position or use default
+local function RestoreAnchorPosition()
+    if ZorTrackerDB.anchorX and ZorTrackerDB.anchorY then
+        anchor:ClearAllPoints()
+        anchor:SetPoint("CENTER", UIParent, "CENTER", ZorTrackerDB.anchorX, ZorTrackerDB.anchorY)
+    else
+        anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+    end
+end
+
+-- Event frame
+local eventFrame = CreateFrame("Frame")
+eventFrame:RegisterEvent("PLAYER_LOGIN")
+eventFrame:SetScript("OnEvent", function()
+    RestoreAnchorPosition()
+end)
+
 -- Drag scripts
 anchor:SetScript("OnDragStart", function() anchor:StartMoving() end)
-anchor:SetScript("OnDragStop", function() anchor:StopMovingOrSizing() end)
+anchor:SetScript("OnDragStop", function()
+    anchor:StopMovingOrSizing()
+    if not ZorTrackerDB then ZorTrackerDB = {} end
+    local x, y = anchor:GetCenter()
+    if x and y then
+        ZorTrackerDB.anchorX = x - (UIParent:GetWidth()/2)
+        ZorTrackerDB.anchorY = y - (UIParent:GetHeight()/2)
+    end
+end)
+
 
 -- Optional: invisible background for testing
 --local tex = anchor:CreateTexture(nil, "OVERLAY")
