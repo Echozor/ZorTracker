@@ -243,7 +243,6 @@ for i, dot in ipairs(dots) do
     end
 end
 
-
 -- Update function
 local function UpdateBars()
     local yOffset = 0
