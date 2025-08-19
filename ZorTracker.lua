@@ -180,9 +180,9 @@ anchor:RegisterForDrag("LeftButton")
 
 -- Restore saved position or use default
 local function RestoreAnchorPosition()
-    if ZorTrackerDB.anchorX and ZorTrackerDB.anchorY then
-        anchor:ClearAllPoints()
-        anchor:SetPoint("CENTER", UIParent, "CENTER", ZorTrackerDB.anchorX, ZorTrackerDB.anchorY)
+    anchor:ClearAllPoints()
+    if ZorTrackerDB.point and ZorTrackerDB.relativePoint then
+        anchor:SetPoint(ZorTrackerDB.point, UIParent, ZorTrackerDB.relativePoint, ZorTrackerDB.x, ZorTrackerDB.y)
     else
         anchor:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
     end
@@ -200,13 +200,14 @@ anchor:SetScript("OnDragStart", function() anchor:StartMoving() end)
 anchor:SetScript("OnDragStop", function()
     anchor:StopMovingOrSizing()
     if not ZorTrackerDB then ZorTrackerDB = {} end
-    local x, y = anchor:GetCenter()
-    if x and y then
-        ZorTrackerDB.anchorX = x - (UIParent:GetWidth()/2)
-        ZorTrackerDB.anchorY = y - (UIParent:GetHeight()/2)
+    local point, relativeTo, relativePoint, xOfs, yOfs = anchor:GetPoint(1)
+    if point and xOfs and yOfs then
+        ZorTrackerDB.point = point
+        ZorTrackerDB.relativePoint = relativePoint
+        ZorTrackerDB.x = xOfs
+        ZorTrackerDB.y = yOfs
     end
 end)
-
 
 -- Optional: invisible background for testing
 --local tex = anchor:CreateTexture(nil, "OVERLAY")
@@ -266,7 +267,7 @@ local function UpdateBars()
             end
 
             -- Stack bars downward from anchor
-            bar:SetPoint("TOP", anchor, "TOP", 0, yOffset)
+            bar:SetPoint("TOP", anchor, "TOP", 0, math.floor(yOffset))
             yOffset = yOffset - spacing
             bar:Show()
         else
